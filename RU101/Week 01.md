@@ -111,7 +111,7 @@
 - great for implementing counters.
 
 - Manipulate with `SET`, `GET`
-- clasic usecase:
+- classic usecase:
   - cache database response as JSON to offload the database
 - Manipulate as a number, but stored still as string
 - `INCR`, `INCRBY`, `DECR`, `DECRBY`
@@ -122,6 +122,56 @@
 - `INCRBYFLOAT key`
 - `TYPE key` - string
 - `OBJECT ENCODING key` - eg: int, embstr
+- so if we try to read a number using `GET key` we will get it between quotes indicating a string but if we read it using the `OBJECT ENCODING key` we will get "int", the numbers manipulation commands will decide if the value is suitable to perform an action on depending on the encoding.
 
-- supports Polymorphism - can change data type
+- so Redis supports Polymorphism - can change data type
 - no schema enforcing
+
+## Hashes
+
+[Documentation](https://redis.io/commands/?group=hash)
+
+- A hash is a mini key value store within a key.
+- Hashes are used to store object like structures.
+- they're mutable.
+- extremely memory effecient.
+- not recursive, so fields values are only strings, not complex data strcutures.
+
+### Typical Use Cases
+
+- API Rate Limiting
+- Session Storage
+
+### Reading, Adding, Updating and Removing hash field value pairs
+
+- GET
+  - `HGET key field`: returns the value of the requested field or (nil).
+  - `HGETALL key`: Get all key value pairs of hash.
+  - `HMGET key [...fields]`: returns all values of the requested fields in order.
+
+- SET
+  - `HSET key fieldName fieldValue`: Create or set the value of a field in a hash.
+  - `HSET key fieldName [...fields]`: Create or set the values of multiple fields in a hash.
+  - `HSETNX key`: SET if it doesn't exist.
+
+- REMOVE
+  - `HDEL key fieldName`: Delete Field.
+  - `DEL key`: removes hash and related fields.
+
+- `[HINCRBY|HINCRBYFLOAT] key fieldName incrByValue`: Increment number fields.
+
+- Hash manipulation commands are done in Constant Time O(1) while `HGETALL` is done in O(n) where n is the number of field value pairs in a hash
+
+- An alternative to `HGETALL` for hashes with a lot of fields is `HSCAN` which is used to select required fields only
+
+- Hashes are not very suitable for objects with nested properties, instead, redis JSON is used to store those objects as JSON
+
+### Other Commands
+
+- `HEXISTS key`: returns 1 if hash exists and 0 otherwise
+- `HKEYS key`: get all field names of requested hash key.
+- `HVALS key`: get all field values of requested hash key.
+
+### Notes
+
+- All expiration commands we used on keys previously can be used on hashes directly.
