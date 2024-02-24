@@ -137,12 +137,12 @@
 - extremely memory effecient.
 - not recursive, so fields values are only strings, not complex data strcutures.
 
-### Typical Use Cases
+### Hashes Use Cases
 
 - API Rate Limiting
 - Session Storage
 
-### Reading, Adding, Updating and Removing hash field value pairs
+### Hashes Commands
 
 - GET
   - `HGET key field`: returns the value of the requested field or (nil).
@@ -166,12 +166,42 @@
 
 - Hashes are not very suitable for objects with nested properties, instead, redis JSON is used to store those objects as JSON
 
-### Other Commands
+### Other Hashes Commands
 
 - `HEXISTS key`: returns 1 if hash exists and 0 otherwise
 - `HKEYS key`: get all field names of requested hash key.
 - `HVALS key`: get all field values of requested hash key.
 
-### Notes
+### Hashes Notes
 
 - All expiration commands we used on keys previously can be used on hashes directly.
+
+## Lists
+
+- Just like normal programming languages lists.
+- can be used to implement stacks & queues.
+- redis implements them as doubly linked lists.
+
+### Lists Use cases
+
+- Spotify songs queue
+- Inter process communication ( Producer Consumer Pattern ) ( Queue )
+
+### List Commands
+
+- `[R/L]PUSH key [...values]`: pushes a value to the right/left of the list. - returns the new size of the list.
+- `[R/L]POP key`: pops a value to the right/left of the list. - returns the popped value.
+- `LRANGE key start stop`: returns the values in a list between the start and stop indecies (0-indexed inclusive), note that a negative value can be used with stop to indicate a starting index from the end of the list.
+- `LLEN key`: returns the size of the list.
+- `LINDEX key index`: returns the element at the specified index.
+- `LSET key index value`: sets the value of a specified index in list.
+- `LREM key count value`: removes {count} occurences of value in list starting from the left.
+- `LTRIM key start stop`: trims list from start to stop indecies starting from the left.
+
+### Lists Notes
+
+- `push/pop/len` commands are executed in O(1) Time and are independent of the list size.
+- `LRANGE`'s time complexity is O(s+n) where n is (stop - start) and s is the distance of start from the head of the list.
+- Queue Implementation can be done using the `RPUSH` and `LPOP` Commands.
+- Stack Implementation can be done using the `RPUSH` and `RPOP` Commands.
+- Doesn't store complex data structures (no support for nesting).
