@@ -71,16 +71,16 @@
     - `scan 0 MATCH customer:1* COUNT 10000`
       - This will make the commad block for longer.
 
-- `DEL key [key ...]`
+- `DEL key [...keys]`
   - remove the key and the memory associated with the key
   - blocking operation
-- `UNLINK key [key ...]`
+- `UNLINK key [...keys]`
   - unlink the key
   - memory reclaimed by an async process
   - non-blocking operation
   - returns the number of unlinked keys.
 - Keys don't need to exist before is manipulated
-- `EXISTS  key [key ...]`
+- `EXISTS key [...keys]`
   - 1 exists
   - 0 doesn't exist
   - it is a bad practice to use this command before a `SET` command as the key could be inserted between them by another connection, using the NX/XX attributes of the `SET` command is recommended.
@@ -147,11 +147,11 @@
 - GET
   - `HGET key field`: returns the value of the requested field or (nil).
   - `HGETALL key`: Get all key value pairs of hash.
-  - `HMGET key [...fields]`: returns all values of the requested fields in order.
+  - `HMGET key field [...fields]`: returns all values of the requested fields in order.
 
 - SET
   - `HSET key fieldName fieldValue`: Create or set the value of a field in a hash.
-  - `HSET key fieldName [...fields]`: Create or set the values of multiple fields in a hash.
+  - `HMSET key fieldName fieldValue [...keyValuePairs]`: Create or set the values of multiple fields in a hash.
   - `HSETNX key`: SET if it doesn't exist.
 
 - REMOVE
@@ -181,6 +181,7 @@
 - Just like normal programming languages lists.
 - can be used to implement stacks & queues.
 - redis implements them as doubly linked lists.
+- Doesn't store complex data structures (no support for nesting).
 
 ### Lists Use cases
 
@@ -189,7 +190,7 @@
 
 ### List Commands
 
-- `[R/L]PUSH key [...values]`: pushes a value to the right/left of the list. - returns the new size of the list.
+- `[R/L]PUSH key value [...values]`: pushes a value to the right/left of the list. - returns the new size of the list.
 - `[R/L]POP key`: pops a value to the right/left of the list. - returns the popped value.
 - `LRANGE key start stop`: returns the values in a list between the start and stop indecies (0-indexed inclusive), note that a negative value can be used with stop to indicate a starting index from the end of the list.
 - `LLEN key`: returns the size of the list.
@@ -204,4 +205,35 @@
 - `LRANGE`'s time complexity is O(s+n) where n is (stop - start) and s is the distance of start from the head of the list.
 - Queue Implementation can be done using the `RPUSH` and `LPOP` Commands.
 - Stack Implementation can be done using the `RPUSH` and `RPOP` Commands.
+
+
+## Sets
+
+- a set is an unordered collection that has no duplicates.
+- O(1) Lookup
+- Supports standard sets operations i.e Intersection, difference, union
 - Doesn't store complex data structures (no support for nesting).
+
+### Sets use cases
+
+- Who's online game widget
+- Unique visitors of a URL, Did this IP address pass by me an hour ago?
+- is this user online?
+- has this user been blacklisted?
+- Tag Cloud (Linking tags to certain names).
+
+### Sets Commands
+
+- `SADD key value [...value]`: returns 1 if the value is not duplicate and was added to the set.
+- `SCARD key`: returns the number of records inside the set.
+- `SISMEMBER key value`: returns 1 if the value exists inside the list.
+- `SMEMBERS key`: returns all elements in a set.
+- `SSCAN key cursor [MATCH pattern] [COUNT count]`.
+- `SREM key value [...values]`.
+- `SPOP key [count]`: removes a random element(s) from the set and returns them.
+
+- `SINTER key [...keys]`: returns a list containing the intersection of the given sets.
+- `SDIFF key [...keys]`: returns a list containing the difference of the given sets.
+- `SUNION key [...keys]`: returns a list containing the distinct common values of the given sets.
+
+#### `[SUNIONSTORE|SDIFFSTORE|SINTERSTORE] destinationKey key [...keys]`: can be used to store the result in a new set specified in the destinationKey, if it already exists, it's overwritten  
