@@ -206,7 +206,6 @@
 - Queue Implementation can be done using the `RPUSH` and `LPOP` Commands.
 - Stack Implementation can be done using the `RPUSH` and `RPOP` Commands.
 
-
 ## Sets
 
 - a set is an unordered collection that has no duplicates.
@@ -224,12 +223,12 @@
 
 ### Sets Commands
 
-- `SADD key value [...value]`: returns 1 if the value is not duplicate and was added to the set.
+- `SADD key member [...members]`: returns 1 if the member is not duplicate and was added to the set.
 - `SCARD key`: returns the number of records inside the set.
-- `SISMEMBER key value`: returns 1 if the value exists inside the list.
+- `SISMEMBER key member`: returns 1 if the member exists inside the list.
 - `SMEMBERS key`: returns all elements in a set.
 - `SSCAN key cursor [MATCH pattern] [COUNT count]`.
-- `SREM key value [...values]`.
+- `SREM key member [...members]`.
 - `SPOP key [count]`: removes a random element(s) from the set and returns them.
 
 - `SINTER key [...keys]`: returns a list containing the intersection of the given sets.
@@ -237,3 +236,46 @@
 - `SUNION key [...keys]`: returns a list containing the distinct common values of the given sets.
 
 #### `[SUNIONSTORE|SDIFFSTORE|SINTERSTORE] destinationKey key [...keys]`: can be used to store the result in a new set specified in the destinationKey, if it already exists, it's overwritten  
+
+## Sorted Sets
+
+- an ordered collection of unique members.
+- members added to a set should also have a specified floating point score which is the sorting criteria.
+- doesn't support nesting.
+
+### Sorted Sets use cases
+
+- Low latency leaderboard
+- priority queues
+
+### Sorted Sets commands
+
+- `ZADD key score member [...scoreMemberPairs] [NX|XX] [CH] [INCR]`
+  - XX: Only update elements that already exist. Don't add new elements.
+  - NX: Only add new elements. Don't update already existing elements.
+  - LT: Only update existing elements if the new score is less than the current score. This flag doesn't prevent adding new elements.
+  - GT: Only update existing elements if the new score is greater than the current score. This flag doesn't prevent adding new elements.
+  - CH: Modify the return value from the number of new elements added, to the total number of elements changed (CH is an abbreviation of changed). Changed elements are new elements added and elements already existing for which the score was updated. So elements specified in the command line having the same score as they had in the past are not counted. Note: normally the return value of ZADD only counts the number of new elements added.
+  - INCR: When this option is specified ZADD acts like ZINCRBY. Only one score-element pair can be specified in this mode.
+- `ZINCRBY key incrementValue member`
+- `ZRANGE key start stop [WITHSCORES]`: gets the first (stop - start + 1) members in an ascendingly sorted list from lowest to highest score, the WITHSCORES flag returns the associated scores next to the members names.
+- `ZREVRANGE key start stop [WITHSCORES]`: same as `ZRANGE` but from highest to lowest.
+- `ZRANK key member [WITHSCORES]`: Returns the rank of member in the sorted set stored at key, with the scores ordered from low to high. The rank (or index) is 0-based, which means that the member with the lowest score has rank 0.
+- `ZREVRANK key member [WITHSCORES]`: same as `ZRANK` but with scores orders from high to low.
+- `ZSCORE key member`: Returns the score of member in the sorted set at key.
+- `ZCOUNT key min max`: Returns the number of elements in the sorted set at key with a score between min and max.
+- `ZREM key member [...members]`: Removes the specified members from the sorted set stored at key. Non existing members are ignored.
+
+### Sorted Sets Notes
+
+- If 2 members are equal in scores then they're sorted according to lexicographic order.
+- Other variations of `ZRANGE` (which retrieves members by position) are `ZRANGEBYSCORE` and `ZRANGEBYLEX` which are self explanatory.
+- the above variations also exist on the command `ZREM`
+- support for `ZDIFF` was introduced in Redis 6.2.
+- Sorted sets has union and intersection operations but cannot be returned directly and should be stored into a destination set. ( `ZINTERSTORE`, `ZUNIONSTORE` )
+
+#### Priority Queue Implementation using Sorted Sets
+
+- top elements can be retreived using `ZRANGE key 0 0`
+- then it can be removed using `ZREM key`
+- above operations can be combined into a transaction for safer usage.
