@@ -3,7 +3,7 @@
 [Documentation for Key commands at redis.io](https://redis.io/commands#generic)  
 [Wikipedia article on Glob style wildcards](<https://en.wikipedia.org/wiki/Glob_(programming)>)
 
-## Keys
+## Keys ( Any Kind of Keys, Lists, Hashes, Sets, Sorted Sets, etc.. )
 
 - used for primary access to data values
 - Unique
