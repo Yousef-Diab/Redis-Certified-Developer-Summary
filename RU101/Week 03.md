@@ -1,4 +1,4 @@
-b# RU101 Week 3
+# RU101 Week 3
 
 ## [How Redis Handles Clients](https://redis.io/docs/reference/clients/)
 
