@@ -8,11 +8,11 @@
 - used for primary access to data values
 - Unique
 - Binary Safe: "Foo", 42, 3.1215. 0xff, any sequence of bytes
-- Up to 512MB in size, super long keys not recomanded
+- Up to 512MB in size, super long keys not recomended
 
 ### Key Spaces
 
-- no classic databasesc but uses Logical databases
+- no classic databases but uses Logical databases
 - Logical database
   - single flat key space
   - no automatic separation of key names
@@ -27,7 +27,7 @@
 ### Key names structure
 
     - can use a separator like `:`
-        - `user:id:followes` - `user:100:followers`
+        - `user:id:followers` - `user:100:followers`
     - make sure is consistent between teams
     - case sensitive
 
@@ -101,7 +101,7 @@
   - `PERSIST key`
   - TTL will return -1
 - can set with `EX` or `PX` params in `SET`
-- TTL can be -1 if the key doesn't exist or if it's Persisted (no expiry). // @TODO: Check if this is correct
+- TTL returns -2 if the key doesn't exist and -1 it's Persisted (no expiry).
 
 ## Strings
 
